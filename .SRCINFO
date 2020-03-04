@@ -1,5 +1,5 @@
-pkgbase = xen
-	pkgver = 4.13.0
+pkgbase = xen-git
+	pkgver = r40689.e465fecbfd
 	pkgrel = 1
 	url = http://www.xenproject.org/
 	changelog = ChangeLog
@@ -46,8 +46,7 @@ pkgbase = xen
 	options = !buildflags
 	options = !strip
 	options = !debug
-	source = https://downloads.xenproject.org/release/xen/4.13.0/xen-4.13.0.tar.gz
-	source = https://downloads.xenproject.org/release/xen/4.13.0/xen-4.13.0.tar.gz.sig
+	source = git://xenbits.xen.org/xen.git#branch=master
 	source = ipxe-git.tar.gz::http://xenbits.xen.org/xen-extfiles/ipxe-git-1dd56dbd11082fb622c2ed21cfaced4f47d798a6.tar.gz
 	source = grub-mkconfig-helper
 	source = efi-xen.cfg
@@ -55,7 +54,6 @@ pkgbase = xen
 	source = xen.conf
 	source = tmpfiles.conf
 	validpgpkeys = 23E3222C145F4475FA8060A783FE14C957E82BD9
-	sha256sums = c69ae21b2ddeaf25532a81a448fcc6a218bc56f93c8907b2d416b2d4339c0afe
 	sha256sums = SKIP
 	sha256sums = fcb2b5da90a59a0011db7403a1ea7887b0dfb04ef91a7d31964c63ed14f7a426
 	sha256sums = 23c3b0eab4cb06260bd07324d2060356560c9bc52270aaaf6130e1c130fc6e5e
@@ -64,7 +62,7 @@ pkgbase = xen
 	sha256sums = 50a9b7fd19e8beb1dea09755f07318f36be0b7ec53d3c9e74f3266a63e682c0c
 	sha256sums = 40e0760810a49f925f2ae9f986940b40eba477dc6d3e83a78baaae096513b3cf
 
-pkgname = xen
+pkgname = xen-git
 	pkgdesc = Virtual Machine Hypervisor & Tools
 	install = xen.install
 	depends = bridge-utils
@@ -91,7 +89,8 @@ pkgname = xen
 	optdepends = openvswitch: Optional Networking support
 	optdepends = seabios: Boot VMs with BIOS
 	optdepends = ovmf: Boot VMs with UEFI
-	provides = xen-4.13.0
+	provides = xen-r40689.e465fecbfd
+	conflicts = xen
 	backup = etc/conf.d/xencommons
 	backup = etc/conf.d/xendomains
 	backup = etc/xen/efi-xen.cfg
@@ -100,8 +99,9 @@ pkgname = xen
 	backup = etc/xen/oxenstored.conf
 	backup = etc/xen/xl.conf
 
-pkgname = xen-docs
+pkgname = xen-docs-git
 	pkgdesc = Virtual Machine Hypervisor documentation
 	arch = any
-	provides = xen-docs-4.13.0
+	provides = xen-docs-r40689.e465fecbfd
+	conflicts = xen-docs
 

@@ -10,10 +10,10 @@
 # Build variables to enable certain optional features.
 _build_stubdom=${build_stubdom:-false}
 
-pkgbase="xen"
-pkgname=("xen" "xen-docs")
-pkgver="4.13.0"
-pkgrel="1"
+pkgbase="xen-git"
+pkgname=("xen-git" "xen-docs-git")
+pkgver=r40689.e465fecbfd
+pkgrel=1
 arch=("x86_64") # TODO What about ARM?
 url="http://www.xenproject.org/"
 license=("GPL2")
@@ -60,23 +60,17 @@ makedepends=(
   "yajl"
 )
 source=(
-  "https://downloads.xenproject.org/release/xen/${pkgver}/${pkgbase}-${pkgver}.tar.gz"
-  "https://downloads.xenproject.org/release/xen/${pkgver}/${pkgbase}-${pkgver}.tar.gz.sig"
+  "git://xenbits.xen.org/xen.git#branch=master"
   "ipxe-git.tar.gz::http://xenbits.xen.org/xen-extfiles/ipxe-git-1dd56dbd11082fb622c2ed21cfaced4f47d798a6.tar.gz"
 
   # Helper and config files.
   "grub-mkconfig-helper"
   "efi-xen.cfg"
   "grub.conf"
-  "${pkgbase}.conf"
+  "xen.conf"
   "tmpfiles.conf"
-
-  # XSA patches.
-
-  # Compile fixes.
 )
 sha256sums=(
-  "c69ae21b2ddeaf25532a81a448fcc6a218bc56f93c8907b2d416b2d4339c0afe"
   "SKIP"
   "fcb2b5da90a59a0011db7403a1ea7887b0dfb04ef91a7d31964c63ed14f7a426"
 
@@ -86,14 +80,14 @@ sha256sums=(
   "3f0af16958c3e057b9baa5afc47050d9adf7dd553274dd97ae4f35938fefb568"
   "50a9b7fd19e8beb1dea09755f07318f36be0b7ec53d3c9e74f3266a63e682c0c"
   "40e0760810a49f925f2ae9f986940b40eba477dc6d3e83a78baaae096513b3cf"
-
-  # XSA patches.
-
-  # Compile fixes.
 )
 noextract=(
   "ipxe-git.tar.gz"
 )
+pkgver() {
+  cd "xen"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
 
 # Stub Domain files (grep '_VERSION=' stubdom/configure).
 if [ "${_build_stubdom}" = true ] ; then
@@ -133,29 +127,11 @@ if [ "${_build_stubdom}" = true ] ; then
 fi
 
 prepare() {
-  cd "${srcdir}/${pkgbase}-${pkgver}"
+  cd "${srcdir}/xen"
 
   # Preparing downloads.
   msg2 'Copying downloaded files...'
   cp "${srcdir}/ipxe-git.tar.gz" tools/firmware/etherboot/ipxe.tar.gz
-
-  # XSA patches.
-  msg2 'Applying XSA patches...'
-
-  # Security patches and compile fixes (qemu-xen-traditional).
-  msg2 'Applying tools patches (qemu-xen-traditional)...'
-  cd tools/qemu-xen-traditional
-  cd ../..
-
-  # Security patches and compile fixes (qemu-xen).
-  msg2 'Applying tools patches (qemu-xen)...'
-  cd tools/qemu-xen
-  cd ../..
-
-  # Misc compile fixes (removed in future versions if not needed anymore).
-  msg2 'Applying misc compile fixes...'
-
-  # Compile fixes.
 
   # Fix Install Paths.
   msg2 'Fixing installation paths...'
@@ -181,7 +157,7 @@ prepare() {
 }
 
 build() {
-  cd "${srcdir}/${pkgbase}-${pkgver}"
+  cd "${srcdir}/xen"
   if [ "${_build_stubdom}" = true ] ; then
     _config_stubdom='--enable-stubdom'
   else
@@ -219,7 +195,7 @@ build() {
   make LANG=C dist
 }
 
-package_xen() {
+package_xen-git() {
   pkgdesc="Virtual Machine Hypervisor & Tools"
   depends=(
     "bridge-utils"
@@ -250,18 +226,19 @@ package_xen() {
     "ovmf: Boot VMs with UEFI"
   )
   provides=("xen-${pkgver}")
-  install="${pkgbase}.install"
+  conflicts=('xen')
+  install="xen.install"
   backup=(
     "etc/conf.d/xencommons"
     "etc/conf.d/xendomains"
-    "etc/${pkgbase}/efi-xen.cfg"
-    "etc/${pkgbase}/cpupool"
-    "etc/${pkgbase}/grub.conf"
-    "etc/${pkgbase}/oxenstored.conf"
-    "etc/${pkgbase}/xl.conf"
+    "etc/xen/efi-xen.cfg"
+    "etc/xen/cpupool"
+    "etc/xen/grub.conf"
+    "etc/xen/oxenstored.conf"
+    "etc/xen/xl.conf"
   )
 
-  cd "${srcdir}/${pkgbase}-${pkgver}"
+  cd "${srcdir}/xen"
   msg2 'Installing Xen...'
   make DESTDIR="${pkgdir}" LANG=C install
 
@@ -271,7 +248,7 @@ package_xen() {
   install -D -m 0755 "${srcdir}/grub-mkconfig-helper" "${pkgdir}/etc/grub.d/09_xen"
   install -D -m 0644 "${srcdir}/efi-xen.cfg" "${pkgdir}/etc/xen/efi-xen.cfg"
   install -D -m 0644 "${srcdir}/xen.conf" "${pkgdir}/usr/lib/modules-load.d/xen.conf"
-  install -D -m 0644 "${srcdir}/tmpfiles.conf" "${pkgdir}/usr/lib/tmpfiles.d/${pkgbase}.conf"
+  install -D -m 0644 "${srcdir}/tmpfiles.conf" "${pkgdir}/usr/lib/tmpfiles.d/xen.conf"
 
   # Create missing directories.
   msg2 'Create missing directories...'
@@ -314,12 +291,13 @@ package_xen() {
   rm "${pkgdir}/usr/share/qemu-xen/qemu/openbios-sparc64"
 }
 
-package_xen-docs() {
+package_xen-docs-git() {
   pkgdesc="Virtual Machine Hypervisor documentation"
   arch=("any")
   provides=("xen-docs-${pkgver}")
+  conflicts=('xen-docs')
 
-  cd "${srcdir}/${pkgbase}-${pkgver}"
+  cd "${srcdir}/xen"
   msg2 'Installing documentation...'
   make DESTDIR="${pkgdir}" LANG=C install-docs
 }
