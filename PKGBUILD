@@ -213,8 +213,7 @@ build() {
       --disable-smartcard \
       --disable-fdt \
       --enable-spice \
-      --enable-usb-redir \
-      --with-sdlabi=1.2"
+      --enable-usb-redir"
 
   msg2 'Building Xen...'
   make LANG=C PYTHON=python2 dist
