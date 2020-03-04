@@ -1,5 +1,5 @@
 pkgbase = xen-git
-	pkgver = r40689.e465fecbfd
+	pkgver = r40745.0d99c909d7
 	pkgrel = 1
 	url = http://www.xenproject.org/
 	changelog = ChangeLog
@@ -46,7 +46,7 @@ pkgbase = xen-git
 	options = !buildflags
 	options = !strip
 	options = !debug
-	source = git://xenbits.xen.org/xen.git#branch=master
+	source = git://xenbits.xen.org/xen.git#branch=staging
 	source = ipxe-git.tar.gz::http://xenbits.xen.org/xen-extfiles/ipxe-git-1dd56dbd11082fb622c2ed21cfaced4f47d798a6.tar.gz
 	source = grub-mkconfig-helper
 	source = efi-xen.cfg
@@ -89,7 +89,7 @@ pkgname = xen-git
 	optdepends = openvswitch: Optional Networking support
 	optdepends = seabios: Boot VMs with BIOS
 	optdepends = ovmf: Boot VMs with UEFI
-	provides = xen-r40689.e465fecbfd
+	provides = xen-r40745.0d99c909d7
 	conflicts = xen
 	backup = etc/conf.d/xencommons
 	backup = etc/conf.d/xendomains
@@ -102,6 +102,6 @@ pkgname = xen-git
 pkgname = xen-docs-git
 	pkgdesc = Virtual Machine Hypervisor documentation
 	arch = any
-	provides = xen-docs-r40689.e465fecbfd
+	provides = xen-docs-r40745.0d99c909d7
 	conflicts = xen-docs
 

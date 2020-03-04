@@ -12,7 +12,7 @@ _build_stubdom=${build_stubdom:-false}
 
 pkgbase="xen-git"
 pkgname=("xen-git" "xen-docs-git")
-pkgver=r40689.e465fecbfd
+pkgver=r40745.0d99c909d7
 pkgrel=1
 arch=("x86_64") # TODO What about ARM?
 url="http://www.xenproject.org/"
@@ -60,7 +60,7 @@ makedepends=(
   "yajl"
 )
 source=(
-  "git://xenbits.xen.org/xen.git#branch=master"
+  "git://xenbits.xen.org/xen.git#branch=staging"
   "ipxe-git.tar.gz::http://xenbits.xen.org/xen-extfiles/ipxe-git-1dd56dbd11082fb622c2ed21cfaced4f47d798a6.tar.gz"
 
   # Helper and config files.
