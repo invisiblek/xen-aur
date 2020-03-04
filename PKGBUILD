@@ -49,7 +49,7 @@ makedepends=(
   "pandoc"
   "pciutils"
   "perl"
-  "python2"
+  "python"
   "sdl"
   "spice"
   "spice-glib"
@@ -191,7 +191,7 @@ build() {
   # Configure Xen.
   msg2 'Configuring...'
   ./autogen.sh
-  PYTHON=/usr/bin/python2 ./configure \
+  ./configure \
     --prefix=/usr \
     --sbindir=/usr/bin \
     --with-sysconfig-leaf-dir=conf.d \
@@ -216,7 +216,7 @@ build() {
       --enable-usb-redir"
 
   msg2 'Building Xen...'
-  make LANG=C PYTHON=python2 dist
+  make LANG=C dist
 }
 
 package_xen() {
@@ -236,7 +236,7 @@ package_xen() {
     "libpng"
     "lzo"
     "pciutils"
-    "python2"
+    "python"
     "sdl"
     "spice"
     "usbredir"
@@ -263,7 +263,7 @@ package_xen() {
 
   cd "${srcdir}/${pkgbase}-${pkgver}"
   msg2 'Installing Xen...'
-  make DESTDIR="${pkgdir}" LANG=C PYTHON=python2 install
+  make DESTDIR="${pkgdir}" LANG=C install
 
   # Install files for Arch Linux.
   msg2 'Installing Arch-specific files...'
@@ -321,5 +321,5 @@ package_xen-docs() {
 
   cd "${srcdir}/${pkgbase}-${pkgver}"
   msg2 'Installing documentation...'
-  make DESTDIR="${pkgdir}" LANG=C PYTHON=python2 install-docs
+  make DESTDIR="${pkgdir}" LANG=C install-docs
 }
