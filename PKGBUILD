@@ -12,7 +12,7 @@ _build_stubdom=${build_stubdom:-false}
 
 pkgbase="xen"
 pkgname=("xen" "xen-docs")
-pkgver="4.12.1"
+pkgver="4.13.0"
 pkgrel="1"
 arch=("x86_64") # TODO What about ARM?
 url="http://www.xenproject.org/"
@@ -76,7 +76,7 @@ source=(
   # Compile fixes.
 )
 sha256sums=(
-  "5450a85497b84167df1d229b3ab98fb24ef4d6b0510dce522798c13c1b090159"
+  "c69ae21b2ddeaf25532a81a448fcc6a218bc56f93c8907b2d416b2d4339c0afe"
   "SKIP"
   "fcb2b5da90a59a0011db7403a1ea7887b0dfb04ef91a7d31964c63ed14f7a426"
 
