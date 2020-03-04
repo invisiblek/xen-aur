@@ -74,6 +74,7 @@ source=(
   # XSA patches.
 
   # Compile fixes.
+  "xen.git-368375d7360a38c27de8e0276498bdd29e9e8a03.patch"
 )
 sha256sums=(
   "5450a85497b84167df1d229b3ab98fb24ef4d6b0510dce522798c13c1b090159"
@@ -90,6 +91,7 @@ sha256sums=(
   # XSA patches.
 
   # Compile fixes.
+  "0bb9db566fd5bb4c12cebf31c795fc63d50c3dabe3e1bef152afe46eeb4b4497"
 )
 noextract=(
   "ipxe-git.tar.gz"
@@ -146,6 +148,8 @@ prepare() {
   msg2 'Applying tools patches (qemu-xen-traditional)...'
   cd tools/qemu-xen-traditional
   cd ../..
+  msg2 "Applying compile fixes"
+  patch -p1 < ../xen.git-368375d7360a38c27de8e0276498bdd29e9e8a03.patch
 
   # Security patches and compile fixes (qemu-xen).
   msg2 'Applying tools patches (qemu-xen)...'

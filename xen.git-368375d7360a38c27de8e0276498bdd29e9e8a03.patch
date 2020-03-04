@@ -1,0 +1,152 @@
+From 368375d7360a38c27de8e0276498bdd29e9e8a03 Mon Sep 17 00:00:00 2001
+From: Petre Pircalabu <ppircalabu@bitdefender.com>
+Date: Mon, 28 Oct 2019 18:38:42 +0200
+Subject: [PATCH] tools/ocaml: Fix build error with Arch Linux
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf8
+Content-Transfer-Encoding: 8bit
+
+gcc (GCC) 9.2.0 complains:
+
+xentoollog_stubs.c: In function âstub_xtl_ocaml_vmessageâ:
+xentoollog_stubs.c:93:16: error: initialization discards âconstâ qualifier from pointer target type [-Werror=discarded-qualifiers]
+   93 |  value *func = caml_named_value(xtl->vmessage_cb) ;
+      |                ^~~~~~~~~~~~~~~~
+
+This patch constifies the pointer returned by caml_named_value in order
+to the accommodate newer versions of OCaml.
+In OCaml >= 4.09 the return value pointer of caml_named_value is
+declared const.
+
+https://github.com/ocaml/ocaml/commit/4f03a1467d29cf587df5a191830f1525506ee0e3
+
+Signed-off-by: Petre Pircalabu <ppircalabu@bitdefender.com>
+Reviewed-by: Anthony PERARD <anthony.perard@citrix.com>
+Release-acked-by: Juergen Gross <jgross@suse.com>
+Acked-by: Wei Liu <wl@xen.org>
+[ wei: remove spaces before semicolons ]
+Signed-off-by: Wei Liu <wl@xen.org>
+---
+ tools/ocaml/libs/xentoollog/xentoollog_stubs.c |  4 ++--
+ tools/ocaml/libs/xl/xenlight_stubs.c           | 20 ++++++++++----------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/tools/ocaml/libs/xentoollog/xentoollog_stubs.c b/tools/ocaml/libs/xentoollog/xentoollog_stubs.c
+index aadc3d1b0b..bf64b211c2 100644
+--- a/tools/ocaml/libs/xentoollog/xentoollog_stubs.c
++++ b/tools/ocaml/libs/xentoollog/xentoollog_stubs.c
+@@ -90,7 +90,7 @@ static void stub_xtl_ocaml_vmessage(struct xentoollog_logger *logger,
+ 	CAMLparam0();
+ 	CAMLlocalN(args, 4);
+ 	struct caml_xtl *xtl = (struct caml_xtl*)logger;
+-	value *func = caml_named_value(xtl->vmessage_cb) ;
++	const value *func = caml_named_value(xtl->vmessage_cb);
+ 	char *msg;
+ 
+ 	if (func == NULL)
+@@ -120,7 +120,7 @@ static void stub_xtl_ocaml_progress(struct xentoollog_logger *logger,
+ 	CAMLparam0();
+ 	CAMLlocalN(args, 5);
+ 	struct caml_xtl *xtl = (struct caml_xtl*)logger;
+-	value *func = caml_named_value(xtl->progress_cb) ;
++	const value *func = caml_named_value(xtl->progress_cb);
+ 
+ 	if (func == NULL)
+ 		caml_raise_sys_error(caml_copy_string("Unable to find callback"));
+diff --git a/tools/ocaml/libs/xl/xenlight_stubs.c b/tools/ocaml/libs/xl/xenlight_stubs.c
+index ff16b8710b..1181971da4 100644
+--- a/tools/ocaml/libs/xl/xenlight_stubs.c
++++ b/tools/ocaml/libs/xl/xenlight_stubs.c
+@@ -75,7 +75,7 @@ static void failwith_xl(int error, char *fname)
+ {
+ 	CAMLparam0();
+ 	CAMLlocal1(arg);
+-	static value *exc = NULL;
++	static const value *exc = NULL;
+ 
+ 	/* First time around, lookup by name */
+ 	if (!exc)
+@@ -424,7 +424,7 @@ void async_callback(libxl_ctx *ctx, int rc, void *for_callback)
+ 	caml_leave_blocking_section();
+ 	CAMLparam0();
+ 	CAMLlocal2(error, tmp);
+-	static value *func = NULL;
++	static const value *func = NULL;
+ 	value *p = (value *) for_callback;
+ 
+ 	if (func == NULL) {
+@@ -1133,7 +1133,7 @@ value stub_libxl_xen_console_read_start(value ctx, value clear)
+ 
+ static void raise_eof(void)
+ {
+-	static value *exc = NULL;
++	static const value *exc = NULL;
+ 
+ 	/* First time around, lookup by name */
+ 	if (!exc)
+@@ -1274,7 +1274,7 @@ int fd_register(void *user, int fd, void **for_app_registration_out,
+ 	CAMLparam0();
+ 	CAMLlocalN(args, 4);
+ 	int ret = 0;
+-	static value *func = NULL;
++	static const value *func = NULL;
+ 	value *p = (value *) user;
+ 	value *for_app;
+ 
+@@ -1317,7 +1317,7 @@ int fd_modify(void *user, int fd, void **for_app_registration_update,
+ 	CAMLparam0();
+ 	CAMLlocalN(args, 4);
+ 	int ret = 0;
+-	static value *func = NULL;
++	static const value *func = NULL;
+ 	value *p = (value *) user;
+ 	value *for_app = *for_app_registration_update;
+ 
+@@ -1356,7 +1356,7 @@ void fd_deregister(void *user, int fd, void *for_app_registration)
+ 	caml_leave_blocking_section();
+ 	CAMLparam0();
+ 	CAMLlocalN(args, 3);
+-	static value *func = NULL;
++	static const value *func = NULL;
+ 	value *p = (value *) user;
+ 	value *for_app = for_app_registration;
+ 
+@@ -1398,7 +1398,7 @@ int timeout_register(void *user, void **for_app_registration_out,
+ 	CAMLlocal2(sec, usec);
+ 	CAMLlocalN(args, 4);
+ 	int ret = 0;
+-	static value *func = NULL;
++	static const value *func = NULL;
+ 	value *p = (value *) user;
+ 	struct timeout_handles *handles;
+ 
+@@ -1450,7 +1450,7 @@ int timeout_modify(void *user, void **for_app_registration_update,
+ 	CAMLlocal1(for_app_update);
+ 	CAMLlocalN(args, 2);
+ 	int ret = 0;
+-	static value *func = NULL;
++	static const value *func = NULL;
+ 	value *p = (value *) user;
+ 	struct timeout_handles *handles = *for_app_registration_update;
+ 
+@@ -1566,7 +1566,7 @@ void event_occurs(void *user, libxl_event *event)
+ 	CAMLparam0();
+ 	CAMLlocalN(args, 2);
+ 	struct user_with_ctx *c_user = (struct user_with_ctx *) user;
+-	static value *func = NULL;
++	static const value *func = NULL;
+ 
+ 	if (func == NULL) {
+ 		/* First time around, lookup by name */
+@@ -1589,7 +1589,7 @@ void disaster(void *user, libxl_event_type type,
+ 	CAMLparam0();
+ 	CAMLlocalN(args, 4);
+ 	struct user_with_ctx *c_user = (struct user_with_ctx *) user;
+-	static value *func = NULL;
++	static const value *func = NULL;
+ 
+ 	if (func == NULL) {
+ 		/* First time around, lookup by name */
+-- 
+2.11.0
+
